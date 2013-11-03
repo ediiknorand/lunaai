@@ -1,2 +1,11 @@
 LunaAI - Homunculus AI for Ragnarok Online
 Made by Edii Knorand
+
+How to install:
+
+Copy the USER_AI/ directory to your AI/ in your RO's directory. Or just create a symbolic link named USER_AI in your AI/ directory.
+
+ $ cd PATH_TO_RO
+ $ ln -s lunaai/USER_AI USER_AI
+
+TODO: How to use/config
