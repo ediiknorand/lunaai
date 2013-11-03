@@ -1,0 +1,10 @@
+function stAttackDance(myid, target, ...)
+  local x,y = GetV(V_POSITION, target)
+  Move(myid, x + math.random(-1,1), y + math.random(-1,1))
+  --Attack(myid, target)
+  --Move(myid, x+1, y)
+  --Move(myid, x-1, y)
+  --Attack(myid, target)
+  --Move(myid, x, y+1)
+  --Move(myid, x, y-1)
+end
