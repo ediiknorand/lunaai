@@ -50,7 +50,6 @@ ftran[stAttackCMD] =
     if(isDead(target)) then
       return stFollowCMD, {myid}
     end
-    local x,y = GetV(V_POSITION, target)
     return nil, nil
   end
 
