@@ -25,7 +25,7 @@ function (myid)
 	  local actors = GetActors()
 	  for i,a in ipairs(actors) do
 	    t = GetV(V_HOMUNTYPE, a)
-	    if(not isMob(a) and t >= 0 and t <= 16) then
+	    if(not isMob(a) and t >= 0 and t <= 16 and a >= 100000000) then
 	      return true, {myid, a}
 	    end
 	  end
