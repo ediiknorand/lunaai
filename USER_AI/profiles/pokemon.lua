@@ -48,7 +48,7 @@ ftran[stIdleFollow] =
 ftran[stAttackCMD] =
   function (myid, target)
     if(isDead(target)) then
-      return stIdle, {myid}
+      return stFollowCMD, {myid}
     end
     local x,y = GetV(V_POSITION, target)
     return nil, nil
