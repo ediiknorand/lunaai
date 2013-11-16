@@ -79,8 +79,23 @@ function getActors(...)
         actors[a].maxhp = GetV(v, a)
       elseif(v == V_MAXSP) then
         actors[a].maxsp = GetV(v, a)
+      elseif(type(v) == "function") then
+        v(actors, a)
       end
     end
   end
   return actors
+end
+
+function isHom(id, ...)
+  local htype = GetV(V_HOMUNTYPE, id)
+  local ishom = (id >= 100000000 and htype >= 1 and htype <= 16)
+  if arg.n == 0 then
+    return ishom
+  end
+  local rhtype = false
+  for i,a in ipairs(arg) do
+    rhtype = rhtype or (a == htype)
+  end
+  return ishom and rhtype
 end
