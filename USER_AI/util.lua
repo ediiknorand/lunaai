@@ -80,7 +80,10 @@ function getActors(...)
       elseif(v == V_MAXSP) then
         actors[a].maxsp = GetV(v, a)
       elseif(type(v) == "function") then
-        v(actors, a)
+        local rv = v(actors, a)
+	if rv ~= nil then
+	  return rv
+	end
       end
     end
   end
