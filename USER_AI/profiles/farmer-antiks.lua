@@ -18,14 +18,16 @@ end
 local ftran = {}
 ftran[stIdle] =
   function (myid)
-    local actors = GetActors()
-    local at
     local owner = GetV(V_OWNER, myid)
-    for id,a in ipairs(actors) do
-      at = GetV(V_TARGET, a)
-      if(isMob(a) and (at == myid or at == owner)) then
-        return stFollowTarget, {myid, a}
-      end
+    local actors = getActors(V_TARGET,
+      function (act, id)
+        if(isMob(id) and (act[id].target == myid or act[id].target == owner)) then
+	  return {stFollowTarget, {myid, id}}
+	end
+	return nil
+      end)
+    if(actors[myid] == nil) then
+      return unpack(actors)
     end
     if(GetV(V_MOTION, owner) == MOTION_MOVE) then
       return stIdleFollow, {myid}
@@ -44,43 +46,50 @@ ftran[stIdleFollow] =
 
 ftran[stFollowTarget] =
   function (myid, target)
+    if(isDead(target)) then
+      return stIdle, {myid}
+    end
     if(getDistance2(myid, target) <= 2) then
       return stAttackCMD, {myid, target}
     end
-    local actors = GetActors()
-    local at
     local owner = GetV(V_OWNER, myid)
-    for id, a in ipairs(actors) do
-      at = GetV(V_TARGET, a)
-      if(isDead(target) or (a~=myid and a~=owner and at==target)) then
-        return stIdle, {myid}
-      end
-      if(at==owner) then
-        return stFollowTarget, {myid, a}
-      end
+    local actors = getActors(V_TARGET,
+      function (act, id)
+        if(id ~= myid and id ~= owner and act[id].target == target) then
+	  return {stIdle, {myid}}
+	end
+	if(id ~= target and act[id].target == owner) then
+	  return {stFollowTarget, {myid, id}}
+	end
+	return nil
+      end)
+    if(actors[myid] == nil) then
+      return unpack(actors)
     end
     return nil, nil
   end
 
 ftran[stAttackCMD] =
   function (myid, target)
-    local actors = GetActors()
     local owner = GetV(V_OWNER, myid)
-    local at
-    for i,a in ipairs(actors) do
-      at = GetV(V_TARGET, a)
-      if(not isMob(a)) then
-        if(a ~= myid and a ~= owner and at == target) then
-          return stKSed, {myid, target, a}
-        end
-      else
-        if((a ~= target) and ((isDead(target) and at == myid) or (at == owner))) then
-          return stFollowTarget, {myid, a}
-        end
-        if(a ~= target and at == myid and isHitted(target)) then
-          return stAttackStack, {myid, a, {[target]=true}}
-        end
-      end
+    local actors = getActors(V_TARGET,
+      function (act, id)
+        if(not isMob(id)) then
+	  if(id ~= myid and id ~= owner and act[id].target == target) then
+	    return {stKSed, {myid, target, id}}
+	  end
+	else
+	  if(id ~= target and (isDead(target) and act[id].target == myid) or (act[id].target == owner)) then
+	    return {stFollowTarget, {myid, id}}
+	  end
+	  if(id ~= target and act[id].target == myid and isHitted(target)) then
+	    return {stAttackStack, {myid, id, {[target]=true}}}
+	  end
+	end
+	return nil
+      end)
+    if(actors[myid] == nil) then
+      return unpack(actors)
     end
     if(isDead(target)) then
       return stIdle, {myid}
@@ -90,27 +99,29 @@ ftran[stAttackCMD] =
 
 ftran[stAttackStack] =
   function (myid, target, stack)
-    local actors = GetActors()
     local owner = GetV(V_OWNER, myid)
-    local at
-    for i,a in ipairs(actors) do
-      at = GetV(V_TARGET, a)
-      if(not isMob(a)) then
-        if(a ~= myid and a ~= owner and stack[at] == true) then
-          return stKSed, {myid, at, a}
-        end
-      else
-        if((a ~= target) and ((isDead(target) and at == myid) or (at == owner))) then
-          return stFollowTarget, {myid, a}
-        end
-        if(a ~= target and at == myid and isHitted(target) and stack[a] == nil) then
-          stack[a] = true
-          return stAttackStack, {myid, a, stack}
-        end
-      end
+    local actors = getActors(V_TARGET,
+      function (act,id)
+        if(not isMob(id)) then
+	  if(id ~= myid and id ~= owner and stack[act[id].target]) then
+	    return {stKSed, {myid, act[id].target, id}}
+	  end
+	else
+	  if(id ~= target and (isDead(target) and act[id].target == myid) or (act[id].target == owner)) then
+	    return {stFollowTarget, {myid, id}}
+	  end
+	  if(id ~= target and act[id].target == myid and isHitted(target) and stack[id] == nil) then
+	    stack[id] = true
+	    return {stAttackStack, {myid, id, stack}}
+	  end
+	end
+	return nil
+      end)
+    if(actors[myid] == nil) then
+      return unpack(actors)
     end
     if(isDead(target)) then
-      at = next(stack)
+      local at = next(stack)
       if(at ~= nil) then
         return stAttackCMD, {myid, at}
       else
