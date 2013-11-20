@@ -18,23 +18,27 @@ end
 local ftran = {}
 ftran[stIdle] =
   function (myid)
-    local actors = getActors(V_TARGET, V_HOMUNTYPE)
     local owner = GetV(V_OWNER, myid)
-    local d = 6
-    local p_id = 0
-    local a_d
-    for id, a in pairs(actors) do
-      if(a.target == myid or a.target == owner) then
-        return stPokLifAtk, {myid, id}
-      end
-      a_d = getDistance2(myid, id)
-      if(a_d <= d and id >= 100000000 and a.homuntype >= 1 and a.homuntype <= 16 and id ~= myid) then
-        d = a_d
-	p_id = id
-      end
+    local actors = getActors(V_TARGET, V_HOMUNTYPE,
+        function (act, id)
+	  if(act[id].target == myid or act[id].target == owner) then
+	    SkillObject(myid, 3, 8004, myid)
+	    return {stPokLifAtk, {myid, id}}
+	  end
+	  act[id].dist = getDistance2(myid, id)
+          if((isHom(id) and id ~= myid) and (act.dist == nil or act[id].dist < act.dist) and act[id].dist < 6) then
+	    act.dist = act[id].dist
+	    act.id = id
+	  end
+	  return nil
+	end
+      )
+    if(actors[myid] == nil) then
+      return unpack(actors)
     end
-    if(p_id ~= 0) then
-      return stPokLifAtk, {myid, p_id}
+    if(actors.id ~= nil) then
+      SkillObject(myid, 3, 8004, myid)
+      return stPokLifAtk, {myid, actors.id}
     end
     local motion = GetV(V_MOTION, owner)
     if(motion == MOTION_MOVE) then
@@ -58,7 +62,6 @@ ftran[stPokLifAtk] =
     if(isDead(target)) then
       return stFollowCMD, {myid}
     end
-    local x,y = GetV(V_POSITION, target)
     return nil, nil
   end
 
