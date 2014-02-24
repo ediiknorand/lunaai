@@ -14,10 +14,32 @@ function shallowcopy(ori)
   return copy
 end
 
+function deepcopy(ori)
+  local copy
+  if type(ori) == 'table' then
+    copy = {}
+    for i,val in pairs(ori) do
+      copy[i] = deepcopy(val)
+    end
+  else
+    copy = ori
+  end
+  return copy
+end
+
 function copyfunction(f)
   return function (...)
     f(unpack(arg))
   end
+end
+
+function file_exists(path)
+  local f = io.open(path,"r")
+  if f then
+    io.close(f)
+    return true
+  end
+  return false
 end
 
 -- Math stuff
