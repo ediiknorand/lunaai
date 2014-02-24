@@ -1,31 +1,22 @@
 #include <string.h>
 #include <stdio.h>
+#include <regex.h>
 #include "instruction.h"
-
-void remove_command(char *str, char *command)
-{
-  int idx = strlen(str) - strlen(command);
-  if(idx >= 0 && !strcmp(&str[idx], command))
-    str[idx] = '\0';
-}
 
 char *get_exp(char *str)
 {
   char *exp = strdup(str);
+  regex_t regex;
+  regmatch_t pmatch[2];
+  size_t nmatch = 2;
+  int reti;
 
-  if(exp[strlen(exp)-1] == '\n')
-    exp[strlen(exp)] = '\0';
+  regcomp(&regex, "define\\|set\\|load\\|unload\\|print *$", 0);
+  reti = regexec(&regex, str, nmatch, pmatch, 0);
+  regfree(&regex);
 
-  if(strcmp("define", exp) >= 0)
-    remove_command(exp, "define");
-  if(strcmp("set", exp) >= 0)
-    remove_command(exp, "set");
-  if(strcmp("unload", exp) >= 0)
-    remove_command(exp, "unload");
-  if(strcmp("load", exp) >= 0)
-    remove_command(exp, "load");
-  if(strcmp("print", exp) >= 0)
-    remove_command(exp, "print");
+  if(!reti)
+    exp[pmatch[0].rm_so] = '\0';
 
   return exp;
 }
