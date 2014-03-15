@@ -11,7 +11,7 @@ char *get_exp(char *str)
   size_t nmatch = 2;
   int reti;
 
-  regcomp(&regex, "define\\|set\\|load\\|unload\\|print *$", 0);
+  regcomp(&regex, "\\(define\\|set\\|load\\|unload\\|print\\)\\?[ ]*$", 0);
   reti = regexec(&regex, str, nmatch, pmatch, 0);
   regfree(&regex);
 
