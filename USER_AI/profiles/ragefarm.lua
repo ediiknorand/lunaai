@@ -70,7 +70,7 @@ ftran[stFollowTarget] =
       return unpack(nextTarget(myid, memory))
     end
     if(getDistance2(myid, target) <= 2) then
-      SkillObject(myid, 3, 8004, myid)
+      --SkillObject(myid, 3, 8004, myid)
       memory[owner] = false
       return stLifAttack, {myid, target, memory}
     end
