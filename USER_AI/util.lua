@@ -71,45 +71,62 @@ function isHitted(id)
   return m == MOTION_HIT
 end
 
+function getActorInfo(id, ...)
+  local actor = {}
+  local functions = {}
+  local f_idx = 1
+  actor.id = id
+  for i,v in ipairs(arg) do
+    if(v == V_OWNER) then
+      actor.owner = GetV(v, id)
+    elseif(v == V_POSITION) then
+      actor.x, actor.y = GetV(v, id)
+    elseif(v == V_TYPE) then
+      actor.type_ = GetV(v, id)
+    elseif(v == V_MOTION) then
+      actor.motion = GetV(v, id)
+    elseif(v == V_ATTACKRANGE) then
+      actor.atkrange = GetV(v, id)
+    elseif(v == V_TARGET) then
+      actor.target = GetV(v, id)
+    elseif(v == V_SKILLATTACKRANGE) then
+      actor.skillatkrange = GetV(v, id)
+    elseif(v == V_HOMUNTYPE) then
+      actor.homuntype = GetV(v, id)
+    elseif(v == V_HP) then
+      actor.hp = GetV(v, id)
+    elseif(v == V_SP) then
+      actor.sp = GetV(v, id)
+    elseif(v == V_MAXHP) then
+      actor.maxhp = GetV(v, id)
+    elseif(v == V_MAXSP) then
+      actor.maxsp = GetV(v, id)
+    elseif(type(v) == "function")  then
+      functions[f_idx] = v
+      f_idx = f_idx + 1
+    end
+  end
+  return actor, functions
+end
+
 function getActors(...)
   local actors = {}
+  local functions = {}
   local oldActors = GetActors()
   for i,a in ipairs(oldActors) do
-    actors[a] = {}
-    for j,v in ipairs(arg) do
-      if(v == V_OWNER) then
-        actors[a].owner = GetV(v, a)
-      elseif(v == V_POSITION) then
-        actors[a].x, actors[a].y = GetV(v, a)
-      elseif(v == V_TYPE) then
-        actors[a].type_ = GetV(v, a)
-      elseif(v == V_MOTION) then
-        actors[a].motion = GetV(v, a)
-      elseif(v == V_ATTACKRANGE) then
-        actors[a].atkrange = GetV(v, a)
-      elseif(v == V_TARGET) then
-        actors[a].target = GetV(v, a)
-      elseif(v == V_SKILLATTACKRANGE) then
-        actors[a].skillatkrange = GetV(v, a)
-      elseif(v == V_HOMUNTYPE) then
-        actors[a].homuntype = GetV(v, a)
-      elseif(v == V_HP) then
-        actors[a].hp = GetV(v, a)
-      elseif(v == V_SP) then
-        actors[a].sp = GetV(v, a)
-      elseif(v == V_MAXHP) then
-        actors[a].maxhp = GetV(v, a)
-      elseif(v == V_MAXSP) then
-        actors[a].maxsp = GetV(v, a)
-      elseif(type(v) == "function") then
-        local rv = v(actors, a)
-	if rv ~= nil then
-	  return rv
-	end
+    actors[a], functions = getActorInfo(a, unpack(arg))
+    for j,f in ipairs(functions) do
+      local rv = f(actors, a)
+      if rv ~= nil then
+        return rv
       end
     end
   end
   return actors
+end
+
+function getOwner(myid, ...)
+  return getActorInfo(GetV(V_OWNER, myid), unpack(arg))
 end
 
 function isHom(id, ...)
