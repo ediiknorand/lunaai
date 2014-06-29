@@ -134,7 +134,7 @@ Profile.command = {
 Profile.init =
 function (myid, outfile)
   if outfile then
-    out_ = io.open("./AI/USER_AI/"..outfile,"w")
+    out_ = io.open("./AI/USER_AI/saves/"..GetV(V_OWNER, myid).."/"..outfile,"w")
   end
   return ftran, stIdleFollow, {myid}
 end
