@@ -127,5 +127,10 @@ void yyerror(char *str)
 
 int main(int argc, char **argv)
 {
+  if(argc <= 1) {
+    fprintf(stderr,"%s: No save directory\n",argv[0]);
+    return 1;
+  }
+  save_dir = argv[1];
   return yyparse();
 }

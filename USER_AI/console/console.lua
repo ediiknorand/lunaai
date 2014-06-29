@@ -66,8 +66,10 @@ end
 -- Init --
 Profile.init =
 function (myid, ...)
-  if file_exists("./AI/USER_AI/console/load.lua") then
-    consoleLoader.param = require("./AI/USER_AI/console/load.lua")
+  local owner_gid = GetV(V_OWNER, myid)
+  local prefix = "./AI/USER_AI/saves/"..owner_gid.."/"
+  if file_exists(prefix.."load.lua") then
+    consoleLoader.param = require(prefix.."load.lua")
     consoleLoader.file = consoleLoader.param[1]
     if file_exists(consoleLoader.file) and (consoleLoader.file ~= "./AI/USER_AI/console/console.lua") then
       consoleLoader.profile = require(consoleLoader.file)

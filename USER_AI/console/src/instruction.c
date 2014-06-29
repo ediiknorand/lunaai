@@ -23,29 +23,45 @@ char *get_exp(char *str)
 
 void ins_define(char *str)
 {
-  FILE *file = fopen("define.lua", "a");
+  char str_dir[64];
+  strcpy(str_dir, "../saves/");
+  strcat(str_dir, save_dir);
+  strcat(str_dir, "/define.lua");
+  FILE *file = fopen(str_dir, "a");
   fprintf(file, "%s\n", str);
   fclose(file);
 }
 
 void ins_set(char *str)
 {
-  FILE *file = fopen("set.lua", "a");
+  char str_dir[64];
+  strcpy(str_dir, "../saves/");
+  strcat(str_dir, save_dir);
+  strcat(str_dir, "/set.lua");
+  FILE *file = fopen(str_dir, "a");
   fprintf(file, "%s\n", str);
   fclose(file);
 }
 
 void ins_load(char *str)
 {
-  FILE *load_file = fopen("load.lua", "w");
-  fprintf(load_file, "require \"./AI/USER_AI/console/set.lua\"\n");
+  char str_dir[64];
+  strcpy(str_dir, "../saves/");
+  strcat(str_dir, save_dir);
+  strcat(str_dir, "/load.lua");
+  FILE *load_file = fopen(str_dir, "w");
+  fprintf(load_file, "require \"./AI/USER_AI/saves/%s/set.lua\"\n", save_dir);
   fprintf(load_file, "return {%s}\n", str);
   fclose(load_file);
 }
 
 void ins_unload()
 {
-  remove("load.lua");
+  char str_dir[64];
+  strcpy(str_dir, "../saves/");
+  strcat(str_dir, save_dir);
+  strcat(str_dir, "/load.lua");
+  remove(str_dir);
 }
 
 void ins_print(char *str)
