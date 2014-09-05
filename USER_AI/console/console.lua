@@ -1,4 +1,6 @@
 require "./AI/USER_AI/const.lua"
+CONSOLE_PROFILE_PATH="./AI/USER_AI/console/console.lua"
+
 Profile = {}
 -- Private --
 consoleLoader = {}
@@ -69,10 +71,16 @@ function (myid, ...)
   local owner_gid = GetV(V_OWNER, myid)
   local prefix = "./AI/USER_AI/saves/"..owner_gid.."/"
   if file_exists(prefix.."load.lua") then
-    consoleLoader.param = require(prefix.."load.lua")
+    if file_exists(prefix.."define.lua") then
+      dofile(prefix.."define.lua")
+    end
+    if file_exists(prefix.."set.lua") then
+      dofile(prefix.."set.lua")
+    end
+    consoleLoader.param = dofile(prefix.."load.lua")
     consoleLoader.file = consoleLoader.param[1]
-    if file_exists(consoleLoader.file) and (consoleLoader.file ~= "./AI/USER_AI/console/console.lua") then
-      consoleLoader.profile = require(consoleLoader.file)
+    if file_exists(consoleLoader.file) and (consoleLoader.file ~= CONSOLE_PROFILE_PATH) then
+      consoleLoader.profile = dofile(consoleLoader.file)
       consoleLoader.param[1] = myid
       local ftran, fun, farg = consoleLoader.profile.init(unpack(consoleLoader.param))
       wrap_command_tran(ftran, consoleLoader.command[MOVE_CMD], consoleLoader.profile.command[MOVE_CMD])

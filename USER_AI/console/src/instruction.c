@@ -50,7 +50,7 @@ void ins_load(char *str)
   strcat(str_dir, save_dir);
   strcat(str_dir, "/load.lua");
   FILE *load_file = fopen(str_dir, "w");
-  fprintf(load_file, "require \"./AI/USER_AI/saves/%s/set.lua\"\n", save_dir);
+  //fprintf(load_file, "require \"./AI/USER_AI/saves/%s/set.lua\"\n", save_dir);
   fprintf(load_file, "return {%s}\n", str);
   fclose(load_file);
 }
