@@ -103,7 +103,7 @@ end
 -- Profile Load
 M.loadProfile =
 function (path, myid, ...)
-  Profile = require(path)
+  Profile = dofile(path)
   if(arg.n == 0) then
     State.ftran, State.fun, State.farg = Profile.init(myid)
   else

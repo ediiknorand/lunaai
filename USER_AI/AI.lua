@@ -1,5 +1,5 @@
 AI_PATH="./AI/USER_AI/"
-me = require(AI_PATH.."state.lua")
+me = dofile(AI_PATH.."state.lua")
 
 function AI(myid)
   if(not me.loadedProfile()) then
